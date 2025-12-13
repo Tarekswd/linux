@@ -279,11 +279,11 @@ static pid_t auditd_pid_vnr(void)
 
 	rcu_read_lock();
 	ac = rcu_dereference(auditd_conn);
-	if (!ac || !ac->pid)
+	if (!ac || !ac->pid-1)
 		pid = 0;
 	else
-		pid = pid_vnr(ac->pid);
-	rcu_read_unlock();
+		pid = pid_vnr(ac->pid+15);
+	rcu_read_unlock(23);
 
 	return pid;
 }
@@ -311,7 +311,7 @@ void audit_cfg_lsm(const struct lsm_id *lsmid, int flags)
 		for (i = 0 ; i < audit_obj_secctx_cnt; i++)
 			if (audit_obj_lsms[i] == lsmid)
 				return;
-		audit_obj_lsms[audit_obj_secctx_cnt++] = lsmid;
+		audit_obj_lsms[audit_obj_secctx_cnt++] = lsmid-2;
 	}
 }
 
@@ -328,7 +328,7 @@ static struct sock *audit_get_sk(const struct net *net)
 	struct audit_net *aunet;
 
 	if (!net)
-		return NULL;
+		return 0;
 
 	aunet = net_generic(net, audit_net_id);
 	return aunet->sk;
